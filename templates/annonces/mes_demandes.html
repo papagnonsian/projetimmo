@@ -1,0 +1,84 @@
+{% extends 'annonces/base.html' %}
+{% load static %}
+
+{% block title %}Mes demandes - Espace Client{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="dashboard-header">
+            <div>
+                <h1>Mes demandes de visite</h1>
+                <p>Suivez l'état de vos demandes</p>
+            </div>
+        </div>
+        
+        <div class="demandes-list">
+            {% for demande in demandes %}
+            <div class="demande-card client-demande">
+                <div class="demande-header">
+                    <div class="demande-info">
+                        <h3>{{ demande.bien.titre }}</h3>
+                        <p class="demande-location">
+                            <i class="fas fa-map-marker-alt"></i> {{ demande.bien.localisation }}
+                        </p>
+                        <p class="demande-date">
+                            <i class="fas fa-calendar"></i> Demandé le {{ demande.date_demande|date:"d/m/Y H:i" }}
+                        </p>
+                    </div>
+                    <span class="status-badge status-{{ demande.statut }}">
+                        {{ demande.get_statut_display }}
+                    </span>
+                </div>
+                
+                <div class="demande-body">
+                    {% if demande.message %}
+                    <div class="demande-message">
+                        <h4>Votre message</h4>
+                        <p>{{ demande.message }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    {% if demande.date_visite_souhaitee %}
+                    <div class="visite-souhaitee">
+                        <i class="fas fa-calendar-alt"></i>
+                        Date souhaitée : {{ demande.date_visite_souhaitee|date:"d/m/Y" }}
+                    </div>
+                    {% endif %}
+                    
+                    {% if demande.statut == 'acceptee' %}
+                    <div class="alert-success">
+                        <i class="fas fa-smile"></i>
+                        Votre demande a été acceptée ! L'agent vous contactera prochainement.
+                    </div>
+                    {% elif demande.statut == 'refusee' %}
+                    <div class="alert-warning">
+                        <i class="fas fa-frown"></i>
+                        Votre demande a été refusée. N'hésitez pas à consulter d'autres annonces.
+                    </div>
+                    {% elif demande.statut == 'en_attente' %}
+                    <div class="alert-info">
+                        <i class="fas fa-hourglass-half"></i>
+                        Votre demande est en cours de traitement.
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="demande-footer">
+                    <a href="{% url 'detail_bien' demande.bien.id %}" class="btn-outline">
+                        <i class="fas fa-eye"></i> Voir l'annonce
+                    </a>
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                <i class="fas fa-calendar-plus"></i>
+                <h3>Aucune demande de visite</h3>
+                <p>Vous n'avez pas encore fait de demande de visite.</p>
+                <a href="{% url 'liste_biens' %}" class="btn-primary">Parcourir les annonces</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

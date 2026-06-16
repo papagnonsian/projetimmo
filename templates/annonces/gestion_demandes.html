@@ -1,0 +1,80 @@
+{% extends 'annonces/base.html' %}
+{% load static %}
+
+{% block title %}Gestion des demandes - Admin{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="dashboard-header">
+            <h1><i class="fas fa-envelope"></i> Gestion des demandes de visite</h1>
+            <p>Liste de toutes les demandes de visite</p>
+        </div>
+        
+        <div class="stats-mini">
+            <div class="stat-mini">
+                <div class="stat-value">{{ demandes.count }}</div>
+                <div class="stat-label">Total demandes</div>
+            </div>
+            <div class="stat-mini">
+                <div class="stat-value">{{ demandes|length }}</div>
+                <div class="stat-label">En attente</div>
+            </div>
+        </div>
+        
+        <div class="demandes-list">
+            {% for demande in demandes %}
+            <div class="demande-card">
+                <div class="demande-header">
+                    <div class="demande-info">
+                        <h3>Demande pour : {{ demande.bien.titre }}</h3>
+                        <p class="demande-date">
+                            <i class="fas fa-calendar"></i> {{ demande.date_demande|date:"d/m/Y H:i" }}
+                        </p>
+                    </div>
+                    <span class="status-badge status-{{ demande.statut }}">
+                        {{ demande.get_statut_display }}
+                    </span>
+                </div>
+                
+                <div class="demande-body">
+                    <div class="client-info">
+                        <h4>Informations client</h4>
+                        <p><i class="fas fa-user"></i> {{ demande.client.prenom }} {{ demande.client.nom }}</p>
+                        <p><i class="fas fa-phone"></i> {{ demande.client.telephone }}</p>
+                        <p><i class="fas fa-envelope"></i> {{ demande.client.email }}</p>
+                    </div>
+                    
+                    <div class="bien-info">
+                        <h4>Informations du bien</h4>
+                        <p><i class="fas fa-tag"></i> Prix : {{ demande.bien.prix|floatformat:0 }} FCFA</p>
+                        <p><i class="fas fa-map-marker-alt"></i> Localisation : {{ demande.bien.localisation }}</p>
+                        <p><i class="fas fa-building"></i> Agence : {{ demande.bien.agence.nom_agence }}</p>
+                    </div>
+                    
+                    {% if demande.message %}
+                    <div class="demande-message">
+                        <h4>Message du client</h4>
+                        <p>{{ demande.message }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    {% if demande.date_visite_souhaitee %}
+                    <div class="visite-souhaitee">
+                        <i class="fas fa-calendar-alt"></i>
+                        Date souhaitée : {{ demande.date_visite_souhaitee|date:"d/m/Y" }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                <i class="fas fa-envelope-open-text"></i>
+                <h3>Aucune demande de visite</h3>
+                <p>Aucune demande n'a été soumise pour le moment.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

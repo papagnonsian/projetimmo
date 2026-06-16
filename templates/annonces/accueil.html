@@ -1,0 +1,173 @@
+{% extends 'annonces/base.html' %}
+{% load static %}
+
+{% block title %}Accueil - Agence Immobilière{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-content">
+        <div class="hero-badge">
+            <i class="fas fa-star"></i> Plateforme immobilière de confiance
+        </div>
+        <h1>Trouvez votre bien <span>idéal</span><br>en Côte d'Ivoire</h1>
+        <p>Des centaines de biens à vendre et à louer. Des agents professionnels à votre service.</p>
+
+        <form class="hero-search" action="{% url 'liste_biens' %}" method="get">
+            <div class="hero-search-input">
+                <i class="fas fa-map-marker-alt"></i>
+                <input type="text" name="commune" placeholder="Commune, quartier...">
+            </div>
+            <div class="hero-search-select">
+                <i class="fas fa-home"></i>
+                <select name="categorie">
+                    <option value="">Tous types</option>
+                    {% for cat in categories %}
+                    <option value="{{ cat.id }}">{{ cat.nom_categorie }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn-accent">
+                <i class="fas fa-search"></i> Rechercher
+            </button>
+        </form>
+
+        <div class="hero-stats">
+            <div class="hero-stat">
+                <span class="hero-stat-number">{{ derniers_biens.count }}+</span>
+                <span class="hero-stat-label">Annonces actives</span>
+            </div>
+            <div class="hero-stat">
+                <span class="hero-stat-number">{{ categories.count }}</span>
+                <span class="hero-stat-label">Catégories</span>
+            </div>
+            <div class="hero-stat">
+                <span class="hero-stat-number">100%</span>
+                <span class="hero-stat-label">Agents vérifiés</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="section-header">
+            <h2>Nos catégories</h2>
+            <p>Découvrez nos différents types de biens</p>
+        </div>
+        <div class="categories-grid">
+            {% for categorie in categories %}
+            <a href="{% url 'liste_biens' %}?categorie={{ categorie.id }}" class="category-card">
+                <div class="category-icon">
+                    <i class="fas fa-home"></i>
+                </div>
+                <h3>{{ categorie.nom_categorie }}</h3>
+                <span class="category-count">{{ categorie.biens.count }} biens</span>
+            </a>
+            {% empty %}
+                <p>Aucune catégorie disponible.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="section bg-light">
+    <div class="container">
+        <div class="section-header">
+            <h2>Dernières annonces</h2>
+            <p>Les biens récemment publiés</p>
+        </div>
+        <div class="biens-grid">
+            {% for bien in derniers_biens %}
+            <div class="bien-card">
+                {% if bien.photos.first %}
+                <div class="bien-image">
+                    <img src="{{ bien.photos.first.url_photo.url }}" alt="{{ bien.titre }}" loading="lazy">
+                    <span class="bien-status publie">Disponible</span>
+                    <span class="bien-category-tag">{{ bien.categorie.nom_categorie }}</span>
+                    <div class="bien-image-overlay">
+                        <a href="{% url 'detail_bien' bien.id %}" class="btn-outline">
+                            <i class="fas fa-eye"></i> Voir
+                        </a>
+                    </div>
+                </div>
+                {% else %}
+                <div class="bien-image placeholder">
+                    <i class="fas fa-home"></i>
+                    <span class="bien-status publie">Disponible</span>
+                    <span class="bien-category-tag">{{ bien.categorie.nom_categorie }}</span>
+                </div>
+                {% endif %}
+                <div class="bien-info">
+                    <h3>{{ bien.titre }}</h3>
+                    <span class="bien-price">{{ bien.prix|floatformat:0 }} FCFA</span>
+                    <p class="bien-location"><i class="fas fa-map-marker-alt"></i> {{ bien.localisation }}</p>
+                    <div class="bien-features">
+                        {% if bien.surface %}
+                        <span><i class="fas fa-arrows-alt"></i> {{ bien.surface }} m²</span>
+                        {% endif %}
+                        {% if bien.pieces %}
+                        <span><i class="fas fa-bed"></i> {{ bien.pieces }} pièces</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="bien-card-footer">
+                    <a href="{% url 'detail_bien' bien.id %}" class="btn-primary btn-block">
+                        <i class="fas fa-eye"></i> Voir détails
+                    </a>
+                </div>
+            </div>
+            {% empty %}
+                <div class="empty-state" style="grid-column: 1 / -1;">
+                    <i class="fas fa-home"></i>
+                    <h3>Aucune annonce disponible</h3>
+                    <p>Revenez bientôt, de nouveaux biens seront publiés.</p>
+                </div>
+            {% endfor %}
+        </div>
+
+        {% if derniers_biens %}
+        <div class="view-all-wrapper">
+            <a href="{% url 'liste_biens' %}" class="btn-outline-dark btn-large">
+                <i class="fas fa-th-large"></i> Voir toutes les annonces
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<section class="section stats">
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">{{ categories.count }}</div>
+                <div class="stat-label">Catégories</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ derniers_biens.count }}+</div>
+                <div class="stat-label">Biens récents</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">100%</div>
+                <div class="stat-label">Agents vérifiés</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% if not user.is_authenticated %}
+<section class="section cta-section">
+    <div class="container">
+        <div class="cta-card">
+            <div class="cta-icon"><i class="fas fa-building"></i></div>
+            <div class="cta-content">
+                <h2>Vous êtes agent immobilier ?</h2>
+                <p>Rejoignez notre réseau, publiez vos biens et gérez vos demandes de visite en toute simplicité.</p>
+            </div>
+            <a href="{% url 'inscription_agent' %}" class="btn-accent btn-large">
+                <i class="fas fa-rocket"></i> Devenir agent
+            </a>
+        </div>
+    </div>
+</section>
+{% endif %}
+{% endblock %}

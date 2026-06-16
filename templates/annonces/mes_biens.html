@@ -1,0 +1,95 @@
+{% extends 'annonces/base.html' %}
+{% load static %}
+
+{% block title %}Mes biens - Espace Agent{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="dashboard-header">
+            <div>
+                <h1><i class="fas fa-building"></i> Mes biens immobiliers</h1>
+                <p>Bienvenue {{ request.user.agent.prenom }} {{ request.user.agent.nom }}</p>
+            </div>
+            <a href="{% url 'ajouter_bien' %}" class="btn-primary">
+                <i class="fas fa-plus"></i> Ajouter un bien
+            </a>
+        </div>
+        
+        <!-- Statistiques -->
+        <div class="stats-mini">
+            <div class="stat-mini">
+                <div class="stat-value">{{ total_biens }}</div>
+                <div class="stat-label">Total biens</div>
+            </div>
+            <div class="stat-mini">
+                <div class="stat-value">{{ biens_publies }}</div>
+                <div class="stat-label">Publiés</div>
+            </div>
+            <div class="stat-mini">
+                <div class="stat-value">{{ biens_brouillon }}</div>
+                <div class="stat-label">Brouillons</div>
+            </div>
+        </div>
+        
+        <!-- Liste des biens -->
+        {% if biens %}
+        <div class="biens-grid">
+            {% for bien in biens %}
+            <div class="bien-card">
+                {% if bien.photos.first %}
+                <div class="bien-image">
+                    <img src="{{ bien.photos.first.url_photo.url }}" alt="{{ bien.titre }}">
+                    <span class="bien-status {% if bien.statut == 'publie' %}status-publie{% else %}status-brouillon{% endif %}">
+                        {{ bien.get_statut_display }}
+                    </span>
+                </div>
+                {% else %}
+                <div class="bien-image placeholder">
+                    <i class="fas fa-home"></i>
+                    <span class="bien-status {% if bien.statut == 'publie' %}status-publie{% else %}status-brouillon{% endif %}">
+                        {{ bien.get_statut_display }}
+                    </span>
+                </div>
+                {% endif %}
+                <div class="bien-info">
+                    <h3>{{ bien.titre }}</h3>
+                    <p class="bien-price">{{ bien.prix|floatformat:0 }} FCFA</p>
+                    <p class="bien-location"><i class="fas fa-map-marker-alt"></i> {{ bien.localisation }}</p>
+                    <p class="bien-category"><i class="fas fa-tag"></i> {{ bien.categorie.nom_categorie }}</p>
+                    <div class="bien-features">
+                        {% if bien.surface %}
+                        <span><i class="fas fa-arrows-alt"></i> {{ bien.surface }} m²</span>
+                        {% endif %}
+                        {% if bien.pieces %}
+                        <span><i class="fas fa-bed"></i> {{ bien.pieces }} pièces</span>
+                        {% endif %}
+                    </div>
+                    <div class="bien-actions" style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                        <a href="{% url 'modifier_bien' bien.id %}" class="btn-primary" style="flex: 1; text-align: center;">
+                            <i class="fas fa-edit"></i> Modifier
+                        </a>
+                        <a href="{% url 'supprimer_bien' bien.id %}" class="btn-danger" style="flex: 1; text-align: center;">
+                            <i class="fas fa-trash"></i> Supprimer
+                        </a>
+                    </div>
+                    <a href="{% url 'detail_bien' bien.id %}" class="btn-outline btn-block" style="margin-top: 0.5rem; text-align: center;">
+                        <i class="fas fa-eye"></i> Voir sur le site
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-building"></i>
+            <h3>Aucun bien</h3>
+            <p>Vous n'avez pas encore ajouté de bien immobilier.</p>
+            <a href="{% url 'ajouter_bien' %}" class="btn-primary" style="margin-top: 1rem;">
+                <i class="fas fa-plus"></i> Ajouter mon premier bien
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

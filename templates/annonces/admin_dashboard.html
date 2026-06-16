@@ -1,0 +1,72 @@
+{% extends 'annonces/base.html' %}
+{% load static %}
+
+{% block title %}Dashboard Admin - Agence Immobilière{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="dashboard-header">
+            <h1><i class="fas fa-chart-line"></i> Dashboard Administrateur</h1>
+            <p>Bienvenue {{ user.username }}, voici les statistiques de la plateforme</p>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.total_agences }}</div>
+                <div class="stat-label">Agences</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.total_agents }}</div>
+                <div class="stat-label">Agents</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.total_clients }}</div>
+                <div class="stat-label">Clients</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.total_categories }}</div>
+                <div class="stat-label">Catégories</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.total_biens }}</div>
+                <div class="stat-label">Biens</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.total_demandes }}</div>
+                <div class="stat-label">Demandes</div>
+            </div>
+        </div>
+        
+        <div class="admin-actions">
+            <h2>Gestion</h2>
+            <div class="admin-grid">
+                <a href="{% url 'gestion_agences' %}" class="admin-card">
+                    <i class="fas fa-building"></i>
+                    <span>Agences</span>
+                </a>
+                <a href="{% url 'gestion_agents' %}" class="admin-card">
+                    <i class="fas fa-user-tie"></i>
+                    <span>Agents</span>
+                </a>
+                <a href="{% url 'gestion_clients' %}" class="admin-card">
+                    <i class="fas fa-users"></i>
+                    <span>Clients</span>
+                </a>
+                <a href="{% url 'gestion_categories' %}" class="admin-card">
+                    <i class="fas fa-tags"></i>
+                    <span>Catégories</span>
+                </a>
+                <a href="{% url 'gestion_biens' %}" class="admin-card">
+                    <i class="fas fa-home"></i>
+                    <span>Biens</span>
+                </a>
+                <a href="{% url 'gestion_demandes' %}" class="admin-card">
+                    <i class="fas fa-envelope"></i>
+                    <span>Demandes</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,140 @@
+{% extends 'annonces/base.html' %}
+{% load static %}
+
+{% block title %}Ajouter un bien - Espace Agent{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="form-container">
+            <div class="form-header">
+                <h1><i class="fas fa-plus-circle"></i> Ajouter un bien immobilier</h1>
+                <p>Remplissez toutes les informations ci-dessous</p>
+            </div>
+            
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <!-- Informations principales -->
+                <div class="form-section">
+                    <h2>Informations du bien</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="{{ form.titre.id_for_label }}">Titre *</label>
+                            {{ form.titre }}
+                            {% if form.titre.errors %}
+                                <div class="form-error">{{ form.titre.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            <label for="{{ form.description.id_for_label }}">Description *</label>
+                            {{ form.description }}
+                            {% if form.description.errors %}
+                                <div class="form-error">{{ form.description.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="{{ form.prix.id_for_label }}">Prix (FCFA) *</label>
+                            {{ form.prix }}
+                            {% if form.prix.errors %}
+                                <div class="form-error">{{ form.prix.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="{{ form.localisation.id_for_label }}">Localisation / Commune *</label>
+                            {{ form.localisation }}
+                            <small>Ex: Cocody, Abidjan</small>
+                            {% if form.localisation.errors %}
+                                <div class="form-error">{{ form.localisation.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="{{ form.surface.id_for_label }}">Surface (m²)</label>
+                            {{ form.surface }}
+                            {% if form.surface.errors %}
+                                <div class="form-error">{{ form.surface.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="{{ form.pieces.id_for_label }}">Nombre de pièces</label>
+                            {{ form.pieces }}
+                            {% if form.pieces.errors %}
+                                <div class="form-error">{{ form.pieces.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="{{ form.categorie.id_for_label }}">Catégorie *</label>
+                            {{ form.categorie }}
+                            {% if form.categorie.errors %}
+                                <div class="form-error">{{ form.categorie.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="{{ form.statut.id_for_label }}">Statut *</label>
+                            {{ form.statut }}
+                            {% if form.statut.errors %}
+                                <div class="form-error">{{ form.statut.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Photos -->
+                <div class="form-section">
+                    <h2>Photos du bien</h2>
+                    <div class="form-group">
+                        <label>Photos (max 10)</label>
+                        <input type="file" name="photos" multiple accept="image/*" class="form-control-file" id="photoInput">
+                        <small>Vous pouvez sélectionner plusieurs photos. La première sera la photo principale.</small>
+                    </div>
+                    <div id="photoPreview" class="photo-preview"></div>
+                </div>
+                
+                <div class="form-actions">
+                    <a href="{% url 'mes_biens' %}" class="btn-outline">Annuler</a>
+                    <button type="submit" class="btn-primary">Publier le bien</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Aperçu des photos avant upload
+    const photoInput = document.getElementById('photoInput');
+    const photoPreview = document.getElementById('photoPreview');
+    
+    if (photoInput) {
+        photoInput.addEventListener('change', function(e) {
+            photoPreview.innerHTML = '';
+            const files = Array.from(e.target.files);
+            
+            files.forEach(file => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    const previewDiv = document.createElement('div');
+                    previewDiv.className = 'photo-preview-item';
+                    
+                    reader.onload = function(e) {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        previewDiv.appendChild(img);
+                    };
+                    
+                    reader.readAsDataURL(file);
+                    photoPreview.appendChild(previewDiv);
+                }
+            });
+        });
+    }
+</script>
+{% endblock %}

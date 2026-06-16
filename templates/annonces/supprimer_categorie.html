@@ -1,0 +1,37 @@
+{% extends 'annonces/base.html' %}
+{% load static %}
+
+{% block title %}Supprimer la catégorie - Admin{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="delete-confirm">
+            <div class="delete-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h1>Confirmer la suppression</h1>
+            <p>Êtes-vous sûr de vouloir supprimer la catégorie :</p>
+            <h2>"{{ categorie.nom_categorie }}"</h2>
+            
+            {% if categorie.nb_biens > 0 %}
+            <div class="warning-box">
+                <i class="fas fa-info-circle"></i>
+                <p>Attention : Cette catégorie contient <strong>{{ categorie.nb_biens }} bien(s)</strong>.</p>
+                <p>La suppression de cette catégorie affectera ces biens.</p>
+            </div>
+            {% endif %}
+            
+            <p class="text-warning">Cette action est irréversible.</p>
+            
+            <form method="post">
+                {% csrf_token %}
+                <div class="delete-buttons">
+                    <a href="{% url 'gestion_categories' %}" class="btn-outline">Annuler</a>
+                    <button type="submit" class="btn-danger">Supprimer définitivement</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

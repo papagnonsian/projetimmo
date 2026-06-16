@@ -1,0 +1,195 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Agence Immobilière{% endblock %}</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'annonces/css/style.css' %}">
+</head>
+<body>
+    <div class="nav-overlay" id="navOverlay"></div>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="{% url 'accueil' %}">
+                    <i class="fas fa-building"></i>
+                    <span>Agence Immo</span>
+                </a>
+            </div>
+
+            <button class="nav-toggle" id="navToggle" aria-label="Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <div class="nav-menu" id="navMenu">
+                <ul class="nav-links">
+                    <li><a href="{% url 'accueil' %}"><i class="fas fa-home"></i> Accueil</a></li>
+                    <li><a href="{% url 'liste_biens' %}"><i class="fas fa-search"></i> Rechercher</a></li>
+                    {% if user.is_authenticated %}
+                        {% if user.agent %}
+                            <li><a href="{% url 'mes_biens' %}"><i class="fas fa-building"></i> Mes biens</a></li>
+                            <li><a href="{% url 'demandes_recues' %}"><i class="fas fa-envelope"></i> Demandes</a></li>
+                            <li><a href="{% url 'mon_profil' %}"><i class="fas fa-user"></i> Mon profil</a></li>
+                        {% elif user.client %}
+                            <li><a href="{% url 'mes_demandes' %}"><i class="fas fa-calendar-alt"></i> Mes demandes</a></li>
+                            <li><a href="{% url 'mon_profil' %}"><i class="fas fa-user"></i> Mon profil</a></li>
+                        {% endif %}
+                        <li><a href="{% url 'deconnexion' %}"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
+                    {% else %}
+                        <li><a href="{% url 'connexion' %}"><i class="fas fa-sign-in-alt"></i> Connexion</a></li>
+                        <li><a href="{% url 'inscription' %}"><i class="fas fa-user-plus"></i> Devenir client</a></li>
+                        <li><a href="{% url 'inscription_agent' %}"><i class="fas fa-building"></i> Espace agent</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="messages-container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    <i class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' %}exclamation-circle{% else %}info-circle{% endif %}"></i>
+                    {{ message }}
+                    <button class="alert-close">&times;</button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+    
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    
+    <!-- Footer moderne -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <div class="footer-logo">
+                        <i class="fas fa-building"></i>
+                        <span>Agence Immo</span>
+                    </div>
+                    <p class="footer-description">
+                        Votre partenaire de confiance pour trouver le bien immobilier idéal en Côte d'Ivoire. 
+                        Des professionnels à votre service pour réaliser votre projet immobilier.
+                    </p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-col">
+                    <h3>Liens rapides</h3>
+                    <ul class="footer-links">
+                        <li><a href="{% url 'accueil' %}"><i class="fas fa-chevron-right"></i> Accueil</a></li>
+                        <li><a href="{% url 'liste_biens' %}"><i class="fas fa-chevron-right"></i> Toutes les annonces</a></li>
+                        {% if not user.is_authenticated %}
+                            <li><a href="{% url 'inscription' %}"><i class="fas fa-chevron-right"></i> Devenir client</a></li>
+                            <li><a href="{% url 'inscription_agent' %}"><i class="fas fa-chevron-right"></i> Devenir agent</a></li>
+                        {% endif %}
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> À propos</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h3>Nos services</h3>
+                    <ul class="footer-links">
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Vente de biens</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Location</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Estimation gratuite</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Conseil juridique</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Gestion locative</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h3>Contact</h3>
+                    <ul class="footer-contact">
+                        <li>
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Abidjan, Cocody - Côte d'Ivoire</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-phone-alt"></i>
+                            <span>+225 27 22 50 00 00</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-envelope"></i>
+                            <span>contact@agenceimmo.ci</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-clock"></i>
+                            <span>Lun - Ven: 8h - 18h</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <div class="footer-bottom-content">
+                    <p>&copy; {% now "Y" %} Agence Immobilière. Tous droits réservés.</p>
+                    <div class="footer-bottom-links">
+                        <a href="#">Mentions légales</a>
+                        <span>|</span>
+                        <a href="#">Politique de confidentialité</a>
+                        <span>|</span>
+                        <a href="#">CGU</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <script>
+        // Alertes
+        document.querySelectorAll('.alert-close').forEach(btn => {
+            btn.addEventListener('click', () => btn.parentElement.remove());
+        });
+        setTimeout(() => {
+            document.querySelectorAll('.alert').forEach(a => a.remove());
+        }, 5000);
+
+        // Menu hamburger
+        const toggle = document.getElementById('navToggle');
+        const menu = document.getElementById('navMenu');
+        const overlay = document.getElementById('navOverlay');
+
+        function closeMenu() {
+            toggle.classList.remove('active');
+            menu.classList.remove('open');
+            overlay.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        toggle.addEventListener('click', () => {
+            const isOpen = menu.classList.contains('open');
+            if (isOpen) {
+                closeMenu();
+            } else {
+                toggle.classList.add('active');
+                menu.classList.add('open');
+                overlay.classList.add('open');
+                document.body.style.overflow = 'hidden';
+            }
+        });
+
+        overlay.addEventListener('click', closeMenu);
+
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', closeMenu);
+        });
+    </script>
+</body>
+</html>

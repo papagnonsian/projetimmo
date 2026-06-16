@@ -1,0 +1,160 @@
+{% extends 'annonces/base.html' %}
+{% load static %}
+
+{% block title %}{{ bien.titre }} - Agence Immobilière{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="back-link">
+            <a href="{% url 'liste_biens' %}"><i class="fas fa-arrow-left"></i> Retour aux annonces</a>
+        </div>
+        
+        <div class="detail-layout">
+            <!-- Galerie photos -->
+            <div class="detail-gallery">
+                {% if photo_principale %}
+                <div class="gallery-main">
+                    <img src="{{ photo_principale.url_photo.url }}" alt="{{ bien.titre }}" id="mainImage">
+                </div>
+                {% else %}
+                <div class="gallery-main placeholder">
+                    <i class="fas fa-home"></i>
+                    <p>Aucune photo disponible</p>
+                </div>
+                {% endif %}
+                
+                <!-- Miniatures de toutes les photos -->
+                {% if photos %}
+                <div class="gallery-thumbs">
+                    {% for photo in photos %}
+                    <div class="thumb {% if photo == photo_principale %}active{% endif %}" onclick="changeImage('{{ photo.url_photo.url }}')">
+                        <img src="{{ photo.url_photo.url }}" alt="Photo {{ forloop.counter }}">
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Infos principales -->
+            <div class="detail-info">
+                <h1>{{ bien.titre }}</h1>
+                <div class="bien-price-badge">{{ bien.prix|floatformat:0 }} FCFA</div>
+                <div class="bien-location">
+                    <i class="fas fa-map-marker-alt"></i> {{ bien.localisation }}
+                </div>
+                <div class="bien-category">
+                    <i class="fas fa-tag"></i> {{ bien.categorie.nom_categorie }}
+                </div>
+                
+                <div class="bien-features-detail">
+                    {% if bien.surface %}
+                    <div class="feature">
+                        <i class="fas fa-arrows-alt"></i>
+                        <span>{{ bien.surface }} m²</span>
+                    </div>
+                    {% endif %}
+                    {% if bien.pieces %}
+                    <div class="feature">
+                        <i class="fas fa-bed"></i>
+                        <span>{{ bien.pieces }} pièces</span>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="bien-description">
+                    <h3>Description</h3>
+                    <p>{{ bien.description|linebreaks }}</p>
+                </div>
+                
+                <!-- Formulaire de demande de visite -->
+                <div class="demande-visite">
+                    <h3>Visiter ce bien</h3>
+                    
+                    {% if user.is_authenticated and user.client %}
+                        {% if deja_demande %}
+                            <div class="detail-alert-info">
+                                <i class="fas fa-clock"></i>
+                                Vous avez déjà fait une demande pour ce bien. Un agent vous contactera.
+                            </div>
+                        {% else %}
+                            <form method="post" action="{% url 'demander_visite' bien.id %}">
+                                {% csrf_token %}
+                                {{ demandes_form.as_p }}
+                                <button type="submit" class="btn-primary btn-block">
+                                    <i class="fas fa-calendar-check"></i> Demander une visite
+                                </button>
+                            </form>
+                        {% endif %}
+                    {% elif user.is_authenticated and user.agent %}
+                        <div class="detail-alert-info">
+                            <i class="fas fa-info-circle"></i>
+                            Vous êtes connecté en tant qu'agent. Les clients peuvent demander des visites.
+                        </div>
+                    {% else %}
+                        <div class="detail-alert-warning">
+                            <i class="fas fa-lock"></i>
+                            <a href="{% url 'connexion' %}">Connectez-vous</a> ou
+                            <a href="{% url 'inscription' %}">inscrivez-vous</a> pour demander une visite.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Infos agence -->
+        <div class="agence-info">
+            <h3><i class="fas fa-building"></i> Publié par</h3>
+            <div class="agence-card">
+                <div class="agence-name">{{ bien.agence.nom_agence }}</div>
+                <div class="agence-contact">
+                    <p><i class="fas fa-phone"></i> {{ bien.agence.telephone }}</p>
+                    <p><i class="fas fa-envelope"></i> {{ bien.agence.email }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .detail-alert-info {
+        background: #dbeafe;
+        padding: 1rem;
+        border-radius: var(--radius);
+        color: #1e40af;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .detail-alert-warning {
+        background: #fef3c7;
+        padding: 1rem;
+        border-radius: var(--radius);
+        color: #92400e;
+        text-align: center;
+        font-size: 0.9rem;
+    }
+
+    .detail-alert-warning a {
+        color: #d97706;
+        font-weight: 600;
+    }
+</style>
+
+<script>
+    function changeImage(imageUrl) {
+        const mainImage = document.getElementById('mainImage');
+        if (mainImage) {
+            mainImage.src = imageUrl;
+        }
+        
+        // Mettre à jour la classe active sur les miniatures
+        document.querySelectorAll('.thumb').forEach(thumb => {
+            thumb.classList.remove('active');
+        });
+        event.currentTarget.classList.add('active');
+    }
+</script>
+{% endblock %}

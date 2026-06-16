@@ -1,0 +1,39 @@
+{% extends 'annonces/base.html' %}
+{% load static %}
+
+{% block title %}Supprimer l'agence - Admin{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="delete-confirm">
+            <div class="delete-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h1>Confirmer la suppression</h1>
+            <p>Êtes-vous sûr de vouloir supprimer l'agence :</p>
+            <h2>"{{ agence.nom_agence }}"</h2>
+            
+            <div class="warning-box">
+                <i class="fas fa-info-circle"></i>
+                <p>La suppression de cette agence entraînera :</p>
+                <ul>
+                    <li>La suppression de tous ses agents</li>
+                    <li>La suppression de tous ses biens</li>
+                    <li>La suppression des photos associées</li>
+                </ul>
+            </div>
+            
+            <p class="text-warning">Cette action est irréversible.</p>
+            
+            <form method="post">
+                {% csrf_token %}
+                <div class="delete-buttons">
+                    <a href="{% url 'gestion_agences' %}" class="btn-outline">Annuler</a>
+                    <button type="submit" class="btn-danger">Supprimer définitivement</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

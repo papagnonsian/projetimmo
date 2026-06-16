@@ -1,0 +1,90 @@
+{% extends 'annonces/base.html' %}
+{% load static %}
+
+{% block title %}Gestion des catégories - Admin{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="dashboard-header">
+            <h1><i class="fas fa-tags"></i> Gestion des catégories</h1>
+            <button class="btn-primary" onclick="document.getElementById('addCategorieModal').style.display='flex'">
+                <i class="fas fa-plus"></i> Ajouter une catégorie
+            </button>
+        </div>
+        
+        <div class="stats-mini">
+            <div class="stat-mini">
+                <div class="stat-value">{{ categories.count }}</div>
+                <div class="stat-label">Total catégories</div>
+            </div>
+        </div>
+        
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nom de la catégorie</th>
+                        <th>Nombre de biens</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for categorie in categories %}
+                    <tr>
+                        <td>{{ categorie.id }}</td>
+                        <td>{{ categorie.nom_categorie }}</td>
+                        <td>{{ categorie.nb_biens }}</td>
+                        <td class="actions">
+                            <a href="{% url 'modifier_categorie' categorie.id %}" class="btn-icon">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="{% url 'supprimer_categorie' categorie.id %}" class="btn-icon btn-delete">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="empty-row">
+                            <i class="fas fa-tags"></i>
+                            <p>Aucune catégorie pour le moment.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<!-- Modal ajout catégorie -->
+<div id="addCategorieModal" class="modal" style="display:none">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fas fa-plus"></i> Ajouter une catégorie</h3>
+            <span class="modal-close" onclick="document.getElementById('addCategorieModal').style.display='none'">&times;</span>
+        </div>
+        <form method="post">
+            {% csrf_token %}
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Nom de la catégorie *</label>
+                    {{ form.nom_categorie }}
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-outline" onclick="document.getElementById('addCategorieModal').style.display='none'">Annuler</button>
+                <button type="submit" class="btn-primary">Ajouter</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openAddCategorieModal() {
+        document.getElementById('addCategorieModal').style.display = 'flex';
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends 'annonces/base.html' %}
+{% load static %}
+
+{% block title %}Supprimer - Espace Agent{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="delete-confirm">
+            <div class="delete-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h1>Confirmer la suppression</h1>
+            <p>Êtes-vous sûr de vouloir supprimer le bien :</p>
+            <h2>"{{ bien.titre }}"</h2>
+            <p class="warning">Cette action est irréversible.</p>
+            
+            <form method="post">
+                {% csrf_token %}
+                <div class="delete-buttons">
+                    <a href="{% url 'mes_biens' %}" class="btn-outline">Annuler</a>
+                    <button type="submit" class="btn-danger">Supprimer définitivement</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends 'annonces/base.html' %}
+{% load static %}
+
+{% block title %}Gestion des biens - Admin{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="dashboard-header">
+            <h1><i class="fas fa-home"></i> Gestion des biens immobiliers</h1>
+            <p>Liste de tous les biens publiés sur la plateforme</p>
+        </div>
+        
+        <div class="stats-mini">
+            <div class="stat-mini">
+                <div class="stat-value">{{ biens.count }}</div>
+                <div class="stat-label">Total biens</div>
+            </div>
+        </div>
+        
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Titre</th>
+                        <th>Prix (FCFA)</th>
+                        <th>Localisation</th>
+                        <th>Catégorie</th>
+                        <th>Statut</th>
+                        <th>Agence</th>
+                        <th>Agent</th>
+                        <th>Date création</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for bien in biens %}
+                    <tr>
+                        <td>{{ bien.id }}</td>
+                        <td>{{ bien.titre|truncatechars:30 }}</td>
+                        <td>{{ bien.prix|floatformat:0 }}</td>
+                        <td>{{ bien.localisation }}</td>
+                        <td>{{ bien.categorie.nom_categorie }}</td>
+                        <td>
+                            <span class="status-badge status-{{ bien.statut }}">
+                                {{ bien.get_statut_display }}
+                            </span>
+                        </td>
+                        <td>{{ bien.agence.nom_agence|truncatechars:20 }}</td>
+                        <td>{{ bien.agent.prenom }} {{ bien.agent.nom }}</td>
+                        <td>{{ bien.date_creation|date:"d/m/Y" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="9" class="empty-row">
+                            <i class="fas fa-home"></i>
+                            <p>Aucun bien publié pour le moment.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+{% endblock %}

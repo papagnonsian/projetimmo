@@ -1,0 +1,73 @@
+{% extends 'annonces/base.html' %}
+{% load static %}
+
+{% block title %}Mon profil - Agence Immobilière{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="profile-container">
+            <div class="profile-header">
+                <div class="profile-avatar">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="profile-info">
+                    <h1>{{ client.prenom }} {{ client.nom }}</h1>
+                    <p>Membre depuis le {{ client.date_inscription|date:"d/m/Y" }}</p>
+                </div>
+            </div>
+            
+            <div class="profile-grid">
+                <div class="profile-card">
+                    <h3><i class="fas fa-user"></i> Informations personnelles</h3>
+                    <div class="info-row">
+                        <span class="info-label">Nom complet :</span>
+                        <span class="info-value">{{ client.prenom }} {{ client.nom }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Email :</span>
+                        <span class="info-value">{{ client.email }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Téléphone :</span>
+                        <span class="info-value">{{ client.telephone }}</span>
+                    </div>
+                </div>
+                
+                <div class="profile-card">
+                    <h3><i class="fas fa-heart"></i> Préférences</h3>
+                    <div class="info-row">
+                        <span class="info-label">Commune :</span>
+                        <span class="info-value">{{ client.commune|default:"Non renseignée" }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Quartier :</span>
+                        <span class="info-value">{{ client.quartier|default:"Non renseigné" }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Budget max :</span>
+                        <span class="info-value">{{ client.budget|default:"Non renseigné" }} FCFA</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Type de logement :</span>
+                        <span class="info-value">{{ client.get_type_logement_prefere_display|default:"Non renseigné" }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Pièces souhaitées :</span>
+                        <span class="info-value">{{ client.pieces_souhaitees|default:"Non renseigné" }}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="profile-actions">
+                <a href="{% url 'modifier_profil' %}" class="btn-primary">
+                    <i class="fas fa-edit"></i> Modifier mon profil
+                </a>
+                <a href="{% url 'supprimer_compte' %}" class="btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer votre compte ?')">
+                    <i class="fas fa-trash-alt"></i> Supprimer mon compte
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

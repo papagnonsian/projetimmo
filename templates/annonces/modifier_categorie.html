@@ -1,0 +1,29 @@
+{% extends 'annonces/base.html' %}
+{% load static %}
+
+{% block title %}Modifier la catégorie - Admin{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="form-container">
+            <div class="form-header">
+                <h1><i class="fas fa-edit"></i> Modifier la catégorie</h1>
+                <p>Modifiez le nom de la catégorie</p>
+            </div>
+            
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label>Nom de la catégorie</label>
+                    {{ form.nom_categorie }}
+                </div>
+                <div class="form-actions">
+                    <a href="{% url 'gestion_categories' %}" class="btn-outline">Annuler</a>
+                    <button type="submit" class="btn-primary">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

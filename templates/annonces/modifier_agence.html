@@ -1,0 +1,43 @@
+{% extends 'annonces/base.html' %}
+{% load static %}
+
+{% block title %}Modifier l'agence - Admin{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="form-container">
+            <div class="form-header">
+                <h1><i class="fas fa-edit"></i> Modifier l'agence</h1>
+                <p>Modifiez les informations de l'agence</p>
+            </div>
+            
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label>Nom de l'agence</label>
+                    {{ form.nom_agence }}
+                </div>
+                <div class="form-group">
+                    <label>Adresse</label>
+                    {{ form.adresse }}
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Téléphone</label>
+                        {{ form.telephone }}
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        {{ form.email }}
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <a href="{% url 'gestion_agences' %}" class="btn-outline">Annuler</a>
+                    <button type="submit" class="btn-primary">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

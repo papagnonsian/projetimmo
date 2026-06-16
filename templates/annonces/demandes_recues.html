@@ -1,0 +1,92 @@
+{% extends 'annonces/base.html' %}
+{% load static %}
+
+{% block title %}Demandes reçues - Espace Agent{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="dashboard-header">
+            <div>
+                <h1>Demandes de visite reçues</h1>
+                <p>Gérez les demandes des clients</p>
+            </div>
+        </div>
+        
+        <!-- Statistiques -->
+        <div class="stats-mini">
+            <div class="stat-mini">
+                <div class="stat-value">{{ total_demandes }}</div>
+                <div class="stat-label">Total demandes</div>
+            </div>
+            <div class="stat-mini">
+                <div class="stat-value">{{ en_attente }}</div>
+                <div class="stat-label">En attente</div>
+            </div>
+        </div>
+        
+        <!-- Liste des demandes -->
+        <div class="demandes-list">
+            {% for demande in demandes %}
+            <div class="demande-card">
+                <div class="demande-header">
+                    <div class="demande-info">
+                        <h3>Demande pour : {{ demande.bien.titre }}</h3>
+                        <p class="demande-date">
+                            <i class="fas fa-calendar"></i> {{ demande.date_demande|date:"d/m/Y H:i" }}
+                        </p>
+                    </div>
+                    <span class="status-badge status-{{ demande.statut }}">
+                        {{ demande.get_statut_display }}
+                    </span>
+                </div>
+                
+                <div class="demande-body">
+                    <div class="client-info">
+                        <h4>Informations client</h4>
+                        <p><i class="fas fa-user"></i> {{ demande.client.prenom }} {{ demande.client.nom }}</p>
+                        <p><i class="fas fa-phone"></i> {{ demande.client.telephone }}</p>
+                        <p><i class="fas fa-envelope"></i> {{ demande.client.email }}</p>
+                    </div>
+                    
+                    {% if demande.message %}
+                    <div class="demande-message">
+                        <h4>Message du client</h4>
+                        <p>{{ demande.message }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    {% if demande.date_visite_souhaitee %}
+                    <div class="visite-souhaitee">
+                        <i class="fas fa-calendar-alt"></i>
+                        Date souhaitée : {{ demande.date_visite_souhaitee|date:"d/m/Y" }}
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="demande-footer">
+                    {% if demande.statut == 'en_attente' %}
+                        <a href="{% url 'traiter_demande' demande.id 'accepter' %}" class="btn-success">
+                            <i class="fas fa-check"></i> Accepter
+                        </a>
+                        <a href="{% url 'traiter_demande' demande.id 'refuser' %}" class="btn-danger">
+                            <i class="fas fa-times"></i> Refuser
+                        </a>
+                    {% else %}
+                        <span class="demande-traitee">
+                            <i class="fas fa-check-circle"></i> Demande traitée
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                <i class="fas fa-envelope-open-text"></i>
+                <h3>Aucune demande reçue</h3>
+                <p>Les clients verront un bouton pour demander une visite sur vos annonces publiées.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

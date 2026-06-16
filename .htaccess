@@ -1,0 +1,11 @@
+PassengerEnabled On
+PassengerAppRoot /home4/sc7zds18/immo
+PassengerBaseURI /
+
+RewriteEngine On
+
+RewriteCond %{REQUEST_URI} ^/static/
+RewriteRule ^static/(.*)$ /home4/sc7zds18/immo/public/immo/immobilier/staticfiles/$1 [L]
+
+RewriteCond %{REQUEST_URI} ^/media/
+RewriteRule ^media/(.*)$ /home4/sc7zds18/immo/public/immo/immobilier/media/$1 [L]

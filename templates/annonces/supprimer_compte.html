@@ -1,0 +1,36 @@
+{% extends 'annonces/base.html' %}
+{% load static %}
+
+{% block title %}Supprimer mon compte - Agence Immobilière{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="delete-confirm">
+            <div class="delete-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h1>Supprimer mon compte</h1>
+            <p>Êtes-vous sûr de vouloir supprimer définitivement votre compte ?</p>
+            <div class="warning-box">
+                <i class="fas fa-info-circle"></i>
+                <p>Cette action est irréversible et entraînera la suppression de :</p>
+                <ul>
+                    <li>Toutes vos informations personnelles</li>
+                    <li>Toutes vos demandes de visite</li>
+                </ul>
+            </div>
+            
+            <form method="post">
+                {% csrf_token %}
+                <div class="delete-buttons">
+                    <a href="{% url 'mon_profil' %}" class="btn-outline">Annuler</a>
+                    <button type="submit" class="btn-danger">
+                        <i class="fas fa-trash-alt"></i> Supprimer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}
