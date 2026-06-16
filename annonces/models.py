@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.validators import MinValueValidator
 from django.urls import reverse
 
 class Agence(models.Model):
@@ -61,14 +62,19 @@ class Bien(models.Model):
         ('publie', 'Publié'),
         ('desactive', 'Désactivé'),
     ]
-    
+    TYPE_TRANSACTION_CHOICES = [
+        ('vente', 'Vente'),
+        ('location', 'Location'),
+    ]
+
     titre = models.CharField(max_length=200)
     description = models.TextField()
     prix = models.DecimalField(max_digits=12, decimal_places=0)
     localisation = models.CharField(max_length=200, help_text="Ex: Cocody, Abidjan")
+    type_transaction = models.CharField(max_length=10, choices=TYPE_TRANSACTION_CHOICES, default='vente')
     statut = models.CharField(max_length=20, choices=STATUT_CHOICES, default='brouillon')
-    surface = models.IntegerField(null=True, blank=True, help_text="Surface en m²")
-    pieces = models.IntegerField(null=True, blank=True, help_text="Nombre de pièces")
+    surface = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)], help_text="Surface en m²")
+    pieces = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)], help_text="Nombre de pièces")
     
     agence = models.ForeignKey(Agence, on_delete=models.CASCADE, related_name='biens')
     agent = models.ForeignKey(Agent, on_delete=models.CASCADE, related_name='biens')

@@ -24,6 +24,7 @@
                     <tr>
                         <th>ID</th>
                         <th>Titre</th>
+                        <th>Transaction</th>
                         <th>Prix (FCFA)</th>
                         <th>Localisation</th>
                         <th>Catégorie</th>
@@ -38,6 +39,7 @@
                     <tr>
                         <td>{{ bien.id }}</td>
                         <td>{{ bien.titre|truncatechars:30 }}</td>
+                        <td>{{ bien.get_type_transaction_display }}</td>
                         <td>{{ bien.prix|floatformat:0 }}</td>
                         <td>{{ bien.localisation }}</td>
                         <td>{{ bien.categorie.nom_categorie }}</td>
@@ -52,7 +54,7 @@
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="9" class="empty-row">
+                        <td colspan="10" class="empty-row">
                             <i class="fas fa-home"></i>
                             <p>Aucun bien publié pour le moment.</p>
                         </td>

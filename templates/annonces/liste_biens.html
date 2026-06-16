@@ -21,6 +21,10 @@
                         {{ form.categorie }}
                     </div>
                     <div class="form-group">
+                        <label>Type de transaction</label>
+                        {{ form.type_transaction }}
+                    </div>
+                    <div class="form-group">
                         <label>Commune</label>
                         {{ form.commune }}
                     </div>
@@ -61,6 +65,7 @@
                         {% endif %}
                         <div class="bien-info">
                             <h3>{{ bien.titre }}</h3>
+                            <span class="bien-transaction-tag {{ bien.type_transaction }}">{{ bien.get_type_transaction_display }}</span>
                             <span class="bien-price">{{ bien.prix|floatformat:0 }} FCFA</span>
                             <p class="bien-location"><i class="fas fa-map-marker-alt"></i> {{ bien.localisation }}</p>
                             <div class="bien-features">

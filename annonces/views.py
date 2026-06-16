@@ -37,6 +37,8 @@ def liste_biens(request):
     if form.is_valid():
         if form.cleaned_data.get('categorie'):
             biens = biens.filter(categorie=form.cleaned_data['categorie'])
+        if form.cleaned_data.get('type_transaction'):
+            biens = biens.filter(type_transaction=form.cleaned_data['type_transaction'])
         if form.cleaned_data.get('commune'):
             biens = biens.filter(localisation__icontains=form.cleaned_data['commune'])
         if form.cleaned_data.get('prix_min'):

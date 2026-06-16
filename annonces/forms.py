@@ -81,17 +81,22 @@ class ConnexionForm(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput)
 
 class BienForm(forms.ModelForm):
+    surface = forms.IntegerField(required=False, min_value=0, label="Surface (m²)")
+    pieces = forms.IntegerField(required=False, min_value=0, label="Nombre de pièces")
+
     class Meta:
         model = Bien
-        fields = ['titre', 'description', 'prix', 'localisation', 'surface', 'pieces', 'categorie', 'statut']
+        fields = ['titre', 'description', 'prix', 'localisation', 'type_transaction', 'surface', 'pieces', 'categorie', 'statut']
         widgets = {
             'description': forms.Textarea(attrs={'rows': 5}),
         }
-    
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields:
             self.fields[field].widget.attrs.update({'class': 'form-control'})
+        self.fields['surface'].widget.attrs.update({'min': '0'})
+        self.fields['pieces'].widget.attrs.update({'min': '0'})
 
 class DemandeVisiteForm(forms.ModelForm):
     class Meta:
@@ -111,6 +116,11 @@ class FiltreBiensForm(forms.Form):
         queryset=Categorie.objects.all(),
         required=False,
         empty_label="Toutes les catégories",
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    type_transaction = forms.ChoiceField(
+        choices=[('', 'Vente et location')] + Bien.TYPE_TRANSACTION_CHOICES,
+        required=False,
         widget=forms.Select(attrs={'class': 'form-control'})
     )
     commune = forms.CharField(

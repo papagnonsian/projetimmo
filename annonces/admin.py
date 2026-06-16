@@ -65,16 +65,16 @@ class CategorieAdmin(admin.ModelAdmin):
 
 @admin.register(Bien)
 class BienAdmin(admin.ModelAdmin):
-    list_display = ['titre', 'prix', 'localisation', 'categorie', 'statut', 'agence', 'agent', 'date_creation']
+    list_display = ['titre', 'type_transaction', 'prix', 'localisation', 'categorie', 'statut', 'agence', 'agent', 'date_creation']
     list_display_links = ['titre']
-    list_filter = ['statut', 'categorie', 'agence', 'date_creation']
+    list_filter = ['type_transaction', 'statut', 'categorie', 'agence', 'date_creation']
     search_fields = ['titre', 'description', 'localisation']
     readonly_fields = ['date_creation', 'date_modification']
     inlines = [PhotoInline, DemandeInline]
-    
+
     fieldsets = (
         ('Informations principales', {
-            'fields': ('titre', 'description', 'prix', 'localisation', 'surface', 'pieces')
+            'fields': ('titre', 'description', 'prix', 'localisation', 'type_transaction', 'surface', 'pieces')
         }),
         ('Classification', {
             'fields': ('categorie', 'statut')

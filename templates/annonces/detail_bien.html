@@ -39,6 +39,7 @@
             <!-- Infos principales -->
             <div class="detail-info">
                 <h1>{{ bien.titre }}</h1>
+                <span class="bien-transaction-tag {{ bien.type_transaction }}">{{ bien.get_type_transaction_display }}</span>
                 <div class="bien-price-badge">{{ bien.prix|floatformat:0 }} FCFA</div>
                 <div class="bien-location">
                     <i class="fas fa-map-marker-alt"></i> {{ bien.localisation }}

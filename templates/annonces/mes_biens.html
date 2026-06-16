@@ -54,6 +54,7 @@
                 {% endif %}
                 <div class="bien-info">
                     <h3>{{ bien.titre }}</h3>
+                    <span class="bien-transaction-tag {{ bien.type_transaction }}">{{ bien.get_type_transaction_display }}</span>
                     <p class="bien-price">{{ bien.prix|floatformat:0 }} FCFA</p>
                     <p class="bien-location"><i class="fas fa-map-marker-alt"></i> {{ bien.localisation }}</p>
                     <p class="bien-category"><i class="fas fa-tag"></i> {{ bien.categorie.nom_categorie }}</p>

@@ -26,6 +26,14 @@
                     {% endfor %}
                 </select>
             </div>
+            <div class="hero-search-select">
+                <i class="fas fa-file-signature"></i>
+                <select name="type_transaction">
+                    <option value="">Vente et location</option>
+                    <option value="vente">Vente</option>
+                    <option value="location">Location</option>
+                </select>
+            </div>
             <button type="submit" class="btn-accent">
                 <i class="fas fa-search"></i> Rechercher
             </button>
@@ -99,6 +107,7 @@
                 {% endif %}
                 <div class="bien-info">
                     <h3>{{ bien.titre }}</h3>
+                    <span class="bien-transaction-tag {{ bien.type_transaction }}">{{ bien.get_type_transaction_display }}</span>
                     <span class="bien-price">{{ bien.prix|floatformat:0 }} FCFA</span>
                     <p class="bien-location"><i class="fas fa-map-marker-alt"></i> {{ bien.localisation }}</p>
                     <div class="bien-features">

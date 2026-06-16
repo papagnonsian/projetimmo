@@ -593,6 +593,23 @@ a {
     text-overflow: ellipsis;
 }
 
+.bien-transaction-tag {
+    display: inline-block;
+    padding: 0.2rem 0.7rem;
+    border-radius: 50px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    background: var(--primary);
+    color: var(--white);
+    margin-bottom: 0.5rem;
+}
+
+.bien-transaction-tag.location {
+    background: var(--primary-mid);
+}
+
 .bien-price {
     font-size: 1.35rem;
     font-weight: 800;
