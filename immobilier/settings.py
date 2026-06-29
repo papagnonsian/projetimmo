@@ -117,6 +117,7 @@ USE_TZ = True
 
 # Affiche les montants/nombres avec séparateur de milliers (ex: 25 000 000)
 # dans tous les templates, selon le format du fr-fr (espace fine).
+USE_L10N = True
 USE_THOUSAND_SEPARATOR = True
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
