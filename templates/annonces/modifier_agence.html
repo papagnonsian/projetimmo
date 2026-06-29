@@ -32,6 +32,11 @@
                         {{ form.email }}
                     </div>
                 </div>
+                <div class="form-group">
+                    <label>{{ form.premium_jusqu_au.label }}</label>
+                    {{ form.premium_jusqu_au }}
+                    <small style="color:var(--gray);">{{ form.premium_jusqu_au.help_text }}</small>
+                </div>
                 <div class="form-actions">
                     <a href="{% url 'gestion_agences' %}" class="btn-outline">Annuler</a>
                     <button type="submit" class="btn-primary">Enregistrer</button>

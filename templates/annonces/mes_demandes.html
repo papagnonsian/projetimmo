@@ -42,7 +42,7 @@
                     {% if demande.date_visite_souhaitee %}
                     <div class="visite-souhaitee">
                         <i class="fas fa-calendar-alt"></i>
-                        Date souhaitée : {{ demande.date_visite_souhaitee|date:"d/m/Y" }}
+                        Date souhaitée : {{ demande.date_visite_souhaitee|date:"d/m/Y" }}{% if demande.heure_visite_souhaitee %} à {{ demande.heure_visite_souhaitee|time:"H:i" }}{% endif %}
                     </div>
                     {% endif %}
                     
@@ -62,11 +62,21 @@
                         Votre demande est en cours de traitement.
                     </div>
                     {% endif %}
+                    {% if demande.reponse_agent %}
+                    <div class="demande-message" style="margin-top:0.75rem;">
+                        <h4><i class="fas fa-comment-alt"></i> Message de l'agent</h4>
+                        <p>{{ demande.reponse_agent }}</p>
+                    </div>
+                    {% endif %}
                 </div>
                 
                 <div class="demande-footer">
                     <a href="{% url 'detail_bien' demande.bien.id %}" class="btn-outline">
                         <i class="fas fa-eye"></i> Voir l'annonce
+                    </a>
+                    <a href="{% url 'discussion' demande.id %}" class="btn-outline-dark">
+                        <i class="fas fa-comments"></i> Discussion
+                        {% with nb=demande.messages.count %}{% if nb %}<span style="background:var(--primary);color:#fff;border-radius:999px;padding:0 6px;font-size:0.75rem;margin-left:4px;">{{ nb }}</span>{% endif %}{% endwith %}
                     </a>
                 </div>
             </div>

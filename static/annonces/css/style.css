@@ -580,6 +580,31 @@ a {
     backdrop-filter: blur(4px);
 }
 
+.badge-premium {
+    position: absolute;
+    bottom: 0.75rem;
+    left: 0.75rem;
+    padding: 0.3rem 0.85rem;
+    border-radius: 50px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    background: var(--accent);
+    color: var(--white);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.agence-premium-card {
+    border: 1px solid var(--accent);
+    max-width: 320px;
+}
+
+.agence-premium-contact {
+    color: var(--gray);
+    font-size: 0.82rem;
+    margin-top: 0.4rem;
+}
+
 .bien-info {
     padding: 1.25rem;
 }
@@ -1898,3 +1923,35 @@ a {
 }
 
 /* ── AUTH CARD AMÉLIORÉ ── */
+
+/* ── BOUTON FAVORI ── */
+.btn-favori {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.55rem 0.85rem;
+    border: 2px solid #e53e3e;
+    border-radius: var(--radius);
+    background: #fff;
+    color: #e53e3e;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.btn-favori:hover {
+    background: #fff5f5;
+}
+
+.btn-favori.active {
+    border-color: #e53e3e;
+    color: #fff;
+    background: #e53e3e;
+}
+
+.btn-favori.active:hover {
+    background: #c53030;
+    border-color: #c53030;
+}

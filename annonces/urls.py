@@ -5,6 +5,8 @@ urlpatterns = [
     # Pages publiques
     path('', views.accueil, name='accueil'),
     path('biens/', views.liste_biens, name='liste_biens'),
+    path('agences-recommandees/', views.agences_recommandees, name='agences_recommandees'),
+    path('agences-recommandees/<int:agence_id>/', views.biens_agence_recommandee, name='biens_agence_recommandee'),
     path('bien/<int:bien_id>/', views.detail_bien, name='detail_bien'),
     
     # Authentification
@@ -25,10 +27,14 @@ urlpatterns = [
     path('supprimer-photo/<int:bien_id>/<int:photo_id>/', views.supprimer_photo, name='supprimer_photo'),
     path('supprimer-bien/<int:bien_id>/', views.supprimer_bien, name='supprimer_bien'),
     path('demandes-recues/', views.demandes_recues, name='demandes_recues'),
-    path('traiter-demande/<int:demande_id>/<str:action>/', views.traiter_demande, name='traiter_demande'),
+    path('traiter-demande/<int:demande_id>/', views.traiter_demande, name='traiter_demande'),
     
     # Espace Client
     path('mes-demandes/', views.mes_demandes, name='mes_demandes'),
+    path('mes-favoris/', views.mes_favoris, name='mes_favoris'),
+    path('discussion/<int:demande_id>/', views.discussion, name='discussion'),
+    path('abonnement-premium/', views.demander_abonnement_premium, name='demander_abonnement_premium'),
+    path('favoris/toggle/<int:bien_id>/', views.toggle_favori, name='toggle_favori'),
     path('mon-profil/', views.mon_profil, name='mon_profil'),
     path('modifier-profil/', views.modifier_profil, name='modifier_profil'),
     path('supprimer-compte/', views.supprimer_compte, name='supprimer_compte'),

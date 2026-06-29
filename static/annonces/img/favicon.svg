@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Fond arrondi marine -->
+  <rect width="32" height="32" rx="7" fill="#0a2342"/>
+  <!-- Toit doré -->
+  <polygon points="16,4 28,14 4,14" fill="#e8a020"/>
+  <!-- Corps blanc -->
+  <rect x="6" y="13" width="20" height="15" fill="#ffffff"/>
+  <!-- Porte marine -->
+  <rect x="11" y="20" width="10" height="8" rx="5" fill="#0a2342"/>
+</svg>

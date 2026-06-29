@@ -1,0 +1,10 @@
+Bonjour {{ demande.bien.agent.prenom }},
+
+{{ demande.client.prenom }} {{ demande.client.nom }} ({{ demande.client.telephone }}) souhaite visiter le bien "{{ demande.bien.titre }}".
+
+{% if demande.date_visite_souhaitee %}Date de visite souhaitée : {{ demande.date_visite_souhaitee|date:"d/m/Y" }}{% if demande.heure_visite_souhaitee %} à {{ demande.heure_visite_souhaitee|time:"H:i" }}{% endif %}
+{% endif %}{% if demande.message %}Message : {{ demande.message }}
+{% endif %}
+Voir et traiter la demande : {{ lien }}
+
+— Agence Immo CI

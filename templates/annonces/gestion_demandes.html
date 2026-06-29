@@ -62,7 +62,7 @@
                     {% if demande.date_visite_souhaitee %}
                     <div class="visite-souhaitee">
                         <i class="fas fa-calendar-alt"></i>
-                        Date souhaitée : {{ demande.date_visite_souhaitee|date:"d/m/Y" }}
+                        Date souhaitée : {{ demande.date_visite_souhaitee|date:"d/m/Y" }}{% if demande.heure_visite_souhaitee %} à {{ demande.heure_visite_souhaitee|time:"H:i" }}{% endif %}
                     </div>
                     {% endif %}
                 </div>

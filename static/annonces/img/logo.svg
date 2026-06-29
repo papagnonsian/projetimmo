@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 195 46" width="195" height="46">
+
+  <!-- ICÔNE MAISON -->
+  <!-- Corps (marine) -->
+  <path d="M19 3 L37 17 L33 17 L33 41 L5 41 L5 17 L1 17 Z" fill="#0a2342"/>
+  <!-- Toit (doré) par-dessus -->
+  <polygon points="19,3 37,17 1,17" fill="#e8a020"/>
+  <!-- Porte (blanche arrondie) -->
+  <rect x="12" y="27" width="14" height="14" rx="7" fill="#ffffff"/>
+
+  <!-- SÉPARATEUR -->
+  <rect x="47" y="10" width="1" height="26" fill="#e2e8f0" rx="1"/>
+
+  <!-- TEXTE PRINCIPAL : "Agence Immo CI" -->
+  <text x="56" y="26"
+        font-family="Poppins, Segoe UI, Arial, sans-serif"
+        font-size="16"
+        font-weight="700"
+        letter-spacing="0.4"
+        fill="#0a2342">Agence Immo <tspan fill="#e8a020">CI</tspan></text>
+
+  <!-- SOUS-TITRE : "Côte d'Ivoire" -->
+  <text x="57" y="39"
+        font-family="Poppins, Segoe UI, Arial, sans-serif"
+        font-size="9.5"
+        font-weight="400"
+        letter-spacing="1.5"
+        fill="#94a3b8">CÔTE D'IVOIRE</text>
+
+</svg>

@@ -17,6 +17,10 @@
                 <h3><i class="fas fa-sliders-h"></i> Filtres</h3>
                 <form method="get" class="filters-form">
                     <div class="form-group">
+                        <label>Recherche</label>
+                        {{ form.q }}
+                    </div>
+                    <div class="form-group">
                         <label>Catégorie</label>
                         {{ form.categorie }}
                     </div>
@@ -55,12 +59,14 @@
                             <img src="{{ bien.photos.first.url_photo.url }}" alt="{{ bien.titre }}">
                             <span class="bien-status">Disponible</span>
                             <span class="bien-category-tag">{{ bien.categorie.nom_categorie }}</span>
+                            {% if bien.agence.est_premium %}<span class="badge-premium"><i class="fas fa-star"></i> Recommandé</span>{% endif %}
                         </div>
                         {% else %}
                         <div class="bien-image placeholder">
                             <i class="fas fa-home"></i>
                             <span class="bien-status">Disponible</span>
                             <span class="bien-category-tag">{{ bien.categorie.nom_categorie }}</span>
+                            {% if bien.agence.est_premium %}<span class="badge-premium"><i class="fas fa-star"></i> Recommandé</span>{% endif %}
                         </div>
                         {% endif %}
                         <div class="bien-info">
@@ -77,10 +83,19 @@
                                 {% endif %}
                             </div>
                         </div>
-                        <div class="bien-card-footer">
-                            <a href="{% url 'detail_bien' bien.id %}" class="btn-primary btn-block">
+                        <div class="bien-card-footer" style="display:flex; gap:0.5rem;">
+                            <a href="{% url 'detail_bien' bien.id %}" class="btn-primary" style="flex:1;">
                                 <i class="fas fa-eye"></i> Voir détails
                             </a>
+                            {% if user.is_authenticated and user.client %}
+                            <form method="post" action="{% url 'toggle_favori' bien.id %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                                <button type="submit" class="btn-favori {% if bien.id in favoris_ids %}active{% endif %}" title="{% if bien.id in favoris_ids %}Retirer des favoris{% else %}Ajouter aux favoris{% endif %}">
+                                    <i class="{% if bien.id in favoris_ids %}fas{% else %}far{% endif %} fa-heart"></i>
+                                </button>
+                            </form>
+                            {% endif %}
                         </div>
                     </div>
                     {% empty %}

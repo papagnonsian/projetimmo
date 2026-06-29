@@ -1,0 +1,79 @@
+{% extends 'annonces/base.html' %}
+{% load static %}
+
+{% block title %}Mes favoris - Espace Client{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="dashboard-header">
+            <div>
+                <h1><i class="fas fa-heart" style="color:#e53e3e;"></i> Mes favoris</h1>
+                <p>{{ favoris|length }} bien(s) sauvegardé(s)</p>
+            </div>
+            <a href="{% url 'liste_biens' %}" class="btn-outline-dark">
+                <i class="fas fa-search"></i> Parcourir les annonces
+            </a>
+        </div>
+
+        {% if favoris %}
+        <div class="biens-grid" style="margin-top:1.5rem;">
+            {% for favori in favoris %}
+            {% with bien=favori.bien %}
+            <div class="bien-card">
+                {% if bien.photos.first %}
+                <div class="bien-image">
+                    <img src="{{ bien.photos.first.url_photo.url }}" alt="{{ bien.titre }}">
+                    <span class="bien-status">Disponible</span>
+                    <span class="bien-category-tag">{{ bien.categorie.nom_categorie }}</span>
+                    {% if bien.agence.est_premium %}<span class="badge-premium"><i class="fas fa-star"></i> Recommandé</span>{% endif %}
+                </div>
+                {% else %}
+                <div class="bien-image placeholder">
+                    <i class="fas fa-home"></i>
+                    <span class="bien-status">Disponible</span>
+                    <span class="bien-category-tag">{{ bien.categorie.nom_categorie }}</span>
+                    {% if bien.agence.est_premium %}<span class="badge-premium"><i class="fas fa-star"></i> Recommandé</span>{% endif %}
+                </div>
+                {% endif %}
+                <div class="bien-info">
+                    <h3>{{ bien.titre }}</h3>
+                    <span class="bien-transaction-tag {{ bien.type_transaction }}">{{ bien.get_type_transaction_display }}</span>
+                    <span class="bien-price">{{ bien.prix|floatformat:0 }} FCFA</span>
+                    <p class="bien-location"><i class="fas fa-map-marker-alt"></i> {{ bien.localisation }}</p>
+                    <div class="bien-features">
+                        {% if bien.surface %}
+                        <span><i class="fas fa-vector-square"></i> {{ bien.surface }} m²</span>
+                        {% endif %}
+                        {% if bien.pieces %}
+                        <span><i class="fas fa-door-open"></i> {{ bien.pieces }} pièces</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="bien-card-footer" style="display:flex; gap:0.5rem;">
+                    <a href="{% url 'detail_bien' bien.id %}" class="btn-primary" style="flex:1;">
+                        <i class="fas fa-eye"></i> Voir
+                    </a>
+                    <form method="post" action="{% url 'toggle_favori' bien.id %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="{% url 'mes_favoris' %}">
+                        <button type="submit" class="btn-favori active" title="Retirer des favoris">
+                            <i class="fas fa-heart"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endwith %}
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state" style="margin-top:3rem;">
+            <i class="fas fa-heart" style="color:#e2e8f0;"></i>
+            <h3>Aucun favori pour l'instant</h3>
+            <p>Cliquez sur le cœur d'une annonce pour la sauvegarder ici.</p>
+            <a href="{% url 'liste_biens' %}" class="btn-primary">Parcourir les annonces</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

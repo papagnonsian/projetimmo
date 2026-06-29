@@ -1,0 +1,36 @@
+{% extends 'annonces/base.html' %}
+{% load static %}
+
+{% block title %}Agences recommandées - Agence Immobilière{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="section-header" style="text-align:left; margin-bottom:1.5rem;">
+            <h1 style="font-size:1.75rem;"><i class="fas fa-star" style="color:var(--accent);"></i> Agences recommandées</h1>
+            <p style="color:var(--gray); margin-top:0.25rem;">Nos agences partenaires premium</p>
+        </div>
+
+        <div class="categories-grid" style="grid-template-columns: repeat(auto-fill, minmax(220px, 260px)); gap: 1rem;">
+            {% for agence in agences %}
+            <a href="{% url 'biens_agence_recommandee' agence.id %}" class="category-card agence-premium-card">
+                <div class="category-icon">
+                    <i class="fas fa-building"></i>
+                </div>
+                <h3>{{ agence.nom_agence }}</h3>
+                <span class="category-count">{{ agence.nb_biens }} bien(s) publié(s)</span>
+                <p class="agence-premium-contact"><i class="fas fa-map-marker-alt"></i> {{ agence.adresse }}</p>
+                <p class="agence-premium-contact"><i class="fas fa-phone"></i> {{ agence.telephone }}</p>
+                <p class="agence-premium-contact"><i class="fas fa-envelope"></i> {{ agence.email }}</p>
+            </a>
+            {% empty %}
+            <div class="empty-state" style="grid-column:1/-1;">
+                <i class="fas fa-star"></i>
+                <h3>Aucune agence recommandée pour le moment</h3>
+                <p>Revenez bientôt, de nouvelles agences partenaires seront mises en avant ici.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

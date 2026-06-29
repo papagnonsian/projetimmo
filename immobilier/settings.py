@@ -4,9 +4,26 @@ Django settings for immobilier project.
 
 from pathlib import Path
 import os
+import ssl
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+load_dotenv(BASE_DIR / '.env')
+
+# Fix certificats SSL sur Windows : Python n'utilise pas le store Windows par défaut.
+# certifi fournit un bundle de certificats CA reconnus.
+try:
+    import certifi
+    _orig_create_default_context = ssl.create_default_context
+    def _certifi_ssl_context(*args, **kwargs):
+        ctx = _orig_create_default_context(*args, **kwargs)
+        ctx.load_verify_locations(certifi.where())
+        return ctx
+    ssl.create_default_context = _certifi_ssl_context
+except ImportError:
+    pass
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-ta-cle-secrete-change-en-production-123456789')
@@ -97,6 +114,10 @@ LANGUAGE_CODE = 'fr-fr'
 TIME_ZONE = 'Africa/Abidjan'
 USE_I18N = True
 USE_TZ = True
+
+# Affiche les montants/nombres avec séparateur de milliers (ex: 25 000 000)
+# dans tous les templates, selon le format du fr-fr (espace fine).
+USE_THOUSAND_SEPARATOR = True
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
 
@@ -122,6 +143,20 @@ STORAGES = {
 # Media files (uploads)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# Email (notifications : nouvelle demande de visite, demande traitée)
+# En local (sans variables d'environnement) : les emails s'affichent dans la console.
+# En production : configure via EMAIL_HOST, EMAIL_HOST_USER, EMAIL_HOST_PASSWORD.
+EMAIL_BACKEND = os.environ.get(
+    'EMAIL_BACKEND',
+    'django.core.mail.backends.console.EmailBackend' if DEBUG else 'django.core.mail.backends.smtp.EmailBackend'
+)
+EMAIL_HOST = os.environ.get('EMAIL_HOST', 'localhost')
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True') == 'True'
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'no-reply@agenceimmoci.com')
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

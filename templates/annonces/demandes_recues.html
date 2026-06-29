@@ -59,24 +59,39 @@
                     {% if demande.date_visite_souhaitee %}
                     <div class="visite-souhaitee">
                         <i class="fas fa-calendar-alt"></i>
-                        Date souhaitée : {{ demande.date_visite_souhaitee|date:"d/m/Y" }}
+                        Date souhaitée : {{ demande.date_visite_souhaitee|date:"d/m/Y" }}{% if demande.heure_visite_souhaitee %} à {{ demande.heure_visite_souhaitee|time:"H:i" }}{% endif %}
                     </div>
                     {% endif %}
                 </div>
                 
                 <div class="demande-footer">
                     {% if demande.statut == 'en_attente' %}
-                        <a href="{% url 'traiter_demande' demande.id 'accepter' %}" class="btn-success">
-                            <i class="fas fa-check"></i> Accepter
-                        </a>
-                        <a href="{% url 'traiter_demande' demande.id 'refuser' %}" class="btn-danger">
-                            <i class="fas fa-times"></i> Refuser
-                        </a>
+                    <form method="post" action="{% url 'traiter_demande' demande.id %}" style="width:100%;">
+                        {% csrf_token %}
+                        <textarea name="reponse_agent" rows="2" placeholder="Message optionnel pour le client (raison du refus, confirmation de RDV...)" style="width:100%; padding:0.6rem 0.75rem; border:1px solid #e2e8f0; border-radius:var(--radius); font-family:inherit; font-size:0.875rem; resize:vertical; margin-bottom:0.75rem;"></textarea>
+                        <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+                            <button type="submit" name="action" value="accepter" class="btn-success">
+                                <i class="fas fa-check"></i> Accepter
+                            </button>
+                            <button type="submit" name="action" value="refuser" class="btn-danger">
+                                <i class="fas fa-times"></i> Refuser
+                            </button>
+                        </div>
+                    </form>
                     {% else %}
                         <span class="demande-traitee">
                             <i class="fas fa-check-circle"></i> Demande traitée
                         </span>
+                        {% if demande.reponse_agent %}
+                        <p style="margin-top:0.5rem; font-size:0.875rem; color:var(--gray);">
+                            <i class="fas fa-comment-alt"></i> {{ demande.reponse_agent }}
+                        </p>
+                        {% endif %}
                     {% endif %}
+                    <a href="{% url 'discussion' demande.id %}" class="btn-outline-dark" style="margin-top:0.75rem;">
+                        <i class="fas fa-comments"></i> Discussion
+                        {% with nb=demande.messages.count %}{% if nb %}<span style="background:var(--primary);color:#fff;border-radius:999px;padding:0 6px;font-size:0.75rem;margin-left:4px;">{{ nb }}</span>{% endif %}{% endwith %}
+                    </a>
                 </div>
             </div>
             {% empty %}

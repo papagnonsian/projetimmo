@@ -1,0 +1,141 @@
+{% extends 'annonces/base.html' %}
+{% load static %}
+
+{% block title %}Discussion — {{ demande.bien.titre }}{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container" style="max-width:760px;">
+
+    <!-- En-tête -->
+    <div class="back-link" style="margin-bottom:1rem;">
+      {% if est_agent %}
+        <a href="{% url 'demandes_recues' %}"><i class="fas fa-arrow-left"></i> Retour aux demandes</a>
+      {% else %}
+        <a href="{% url 'mes_demandes' %}"><i class="fas fa-arrow-left"></i> Retour à mes demandes</a>
+      {% endif %}
+    </div>
+
+    <div class="dashboard-header" style="margin-bottom:1.25rem;">
+      <div>
+        <h1 style="font-size:1.4rem;"><i class="fas fa-comments"></i> Discussion</h1>
+        <p style="color:var(--gray); font-size:0.9rem;">
+          {{ demande.bien.titre }} &mdash;
+          <span class="status-badge status-{{ demande.statut }}">{{ demande.get_statut_display }}</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- Fil de messages -->
+    <div id="chat-box" style="
+        background:#f8fafc;
+        border:1px solid #e2e8f0;
+        border-radius:var(--radius);
+        padding:1.25rem;
+        min-height:300px;
+        max-height:500px;
+        overflow-y:auto;
+        display:flex;
+        flex-direction:column;
+        gap:0.75rem;
+        margin-bottom:1rem;
+    ">
+      {% for msg in msgs %}
+        {% if msg.auteur == request.user %}
+          <!-- Message envoyé par moi -->
+          <div style="display:flex; justify-content:flex-end;">
+            <div style="
+                background:var(--primary);
+                color:#fff;
+                padding:0.65rem 1rem;
+                border-radius:18px 18px 4px 18px;
+                max-width:75%;
+                font-size:0.9rem;
+                line-height:1.4;
+            ">
+              <p style="margin:0;">{{ msg.contenu }}</p>
+              <p style="margin:0.3rem 0 0; font-size:0.72rem; opacity:0.75; text-align:right;">
+                {{ msg.date_envoi|date:"d/m/Y H:i" }}
+              </p>
+            </div>
+          </div>
+        {% else %}
+          <!-- Message reçu -->
+          <div style="display:flex; justify-content:flex-start; gap:0.5rem; align-items:flex-end;">
+            <div style="
+                width:32px; height:32px;
+                background:var(--accent);
+                border-radius:50%;
+                display:flex; align-items:center; justify-content:center;
+                font-size:0.8rem; font-weight:700; color:var(--dark);
+                flex-shrink:0;
+            ">
+              {{ msg.auteur.username|first|upper }}
+            </div>
+            <div style="
+                background:#fff;
+                border:1px solid #e2e8f0;
+                color:var(--dark);
+                padding:0.65rem 1rem;
+                border-radius:18px 18px 18px 4px;
+                max-width:75%;
+                font-size:0.9rem;
+                line-height:1.4;
+            ">
+              <p style="margin:0 0 0.2rem; font-size:0.75rem; font-weight:600; color:var(--primary);">
+                {{ msg.auteur.get_full_name|default:msg.auteur.username }}
+              </p>
+              <p style="margin:0;">{{ msg.contenu }}</p>
+              <p style="margin:0.3rem 0 0; font-size:0.72rem; color:var(--gray);">
+                {{ msg.date_envoi|date:"d/m/Y H:i" }}
+              </p>
+            </div>
+          </div>
+        {% endif %}
+      {% empty %}
+        <div style="text-align:center; color:var(--gray); margin:auto;">
+          <i class="fas fa-comments" style="font-size:2rem; opacity:0.3;"></i>
+          <p style="margin-top:0.5rem;">Aucun message pour l'instant. Commencez la discussion !</p>
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- Formulaire d'envoi -->
+    <form method="post" style="display:flex; gap:0.5rem; align-items:flex-end;">
+      {% csrf_token %}
+      <textarea
+        name="contenu"
+        rows="2"
+        placeholder="Écrivez votre message…"
+        required
+        style="
+            flex:1;
+            padding:0.75rem 1rem;
+            border:1px solid #e2e8f0;
+            border-radius:var(--radius);
+            font-family:inherit;
+            font-size:0.9rem;
+            resize:none;
+        "
+        onkeydown="if(event.ctrlKey && event.key==='Enter') this.form.submit();"
+      ></textarea>
+      <button type="submit" class="btn-primary" style="height:48px; white-space:nowrap;">
+        <i class="fas fa-paper-plane"></i> Envoyer
+      </button>
+    </form>
+    <p style="font-size:0.75rem; color:var(--gray); margin-top:0.4rem;">
+      Ctrl + Entrée pour envoyer rapidement
+    </p>
+
+  </div>
+</section>
+
+<script>
+  // Scroll automatique vers le bas
+  const box = document.getElementById('chat-box');
+  box.scrollTop = box.scrollHeight;
+
+  // Auto-refresh toutes les 30 secondes
+  setTimeout(() => location.reload(), 30000);
+</script>
+{% endblock %}

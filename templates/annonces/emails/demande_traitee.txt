@@ -1,0 +1,12 @@
+Bonjour {{ demande.client.prenom }},
+
+Votre demande de visite pour le bien "{{ demande.bien.titre }}" a été {{ demande.get_statut_display|lower }}.
+
+{% if demande.reponse_agent %}
+Message de l'agent :
+{{ demande.reponse_agent }}
+
+{% endif %}
+Retrouvez le détail de vos demandes ici : {{ lien }}
+
+— Agence Immo CI

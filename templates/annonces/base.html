@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Agence Immobilière{% endblock %}</title>
-    
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="{% static 'annonces/css/style.css' %}">
@@ -31,6 +30,7 @@
                 <ul class="nav-links">
                     <li><a href="{% url 'accueil' %}"><i class="fas fa-home"></i> Accueil</a></li>
                     <li><a href="{% url 'liste_biens' %}"><i class="fas fa-search"></i> Rechercher</a></li>
+                    <li><a href="{% url 'agences_recommandees' %}"><i class="fas fa-star"></i> Agences recommandées</a></li>
                     {% if user.is_authenticated %}
                         {% if user.agent %}
                             <li><a href="{% url 'mes_biens' %}"><i class="fas fa-building"></i> Mes biens</a></li>
@@ -38,7 +38,11 @@
                             <li><a href="{% url 'mon_profil' %}"><i class="fas fa-user"></i> Mon profil</a></li>
                         {% elif user.client %}
                             <li><a href="{% url 'mes_demandes' %}"><i class="fas fa-calendar-alt"></i> Mes demandes</a></li>
+                            <li><a href="{% url 'mes_favoris' %}"><i class="fas fa-heart"></i> Mes favoris</a></li>
                             <li><a href="{% url 'mon_profil' %}"><i class="fas fa-user"></i> Mon profil</a></li>
+                        {% endif %}
+                        {% if user.is_staff or user.is_superuser %}
+                            <li><a href="{% url 'admin_dashboard' %}"><i class="fas fa-cogs"></i> Tableau de bord</a></li>
                         {% endif %}
                         <li><a href="{% url 'deconnexion' %}"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
                     {% else %}

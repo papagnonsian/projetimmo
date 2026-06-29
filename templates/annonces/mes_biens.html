@@ -32,6 +32,32 @@
             </div>
         </div>
         
+        <!-- Bannière premium -->
+        {% if request.user.agent.agence.est_premium %}
+        <div style="display:flex; align-items:center; gap:1rem; background:#fffbeb; border:1px solid #fde68a; border-radius:var(--radius); padding:1rem 1.25rem; margin-bottom:1.5rem; flex-wrap:wrap;">
+            <i class="fas fa-star" style="color:#e8a020; font-size:1.5rem;"></i>
+            <div style="flex:1;">
+                <strong style="color:#92400e;">Agence Premium</strong>
+                <p style="margin:0; font-size:0.85rem; color:#b45309;">
+                    Votre agence est mise en avant jusqu'au {{ request.user.agent.agence.premium_jusqu_au|date:"d/m/Y" }}.
+                </p>
+            </div>
+        </div>
+        {% else %}
+        <div style="display:flex; align-items:center; gap:1rem; background:#f0f9ff; border:1px solid #bae6fd; border-radius:var(--radius); padding:1rem 1.25rem; margin-bottom:1.5rem; flex-wrap:wrap;">
+            <i class="fas fa-star" style="color:#0ea5e9; font-size:1.5rem;"></i>
+            <div style="flex:1;">
+                <strong style="color:#0c4a6e;">Passez Premium</strong>
+                <p style="margin:0; font-size:0.85rem; color:#075985;">
+                    Vos biens apparaissent en tête des résultats et votre agence est mise en avant sur la page des recommandées.
+                </p>
+            </div>
+            <a href="{% url 'demander_abonnement_premium' %}" class="btn-primary" style="white-space:nowrap;">
+                <i class="fas fa-paper-plane"></i> Demander l'abonnement
+            </a>
+        </div>
+        {% endif %}
+
         <!-- Liste des biens -->
         {% if biens %}
         <div class="biens-grid">

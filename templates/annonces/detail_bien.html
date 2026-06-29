@@ -38,7 +38,18 @@
             
             <!-- Infos principales -->
             <div class="detail-info">
-                <h1>{{ bien.titre }}</h1>
+                <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:1rem; flex-wrap:wrap;">
+                    <h1 style="margin:0;">{{ bien.titre }}</h1>
+                    {% if user.is_authenticated and user.client %}
+                    <form method="post" action="{% url 'toggle_favori' bien.id %}" style="flex-shrink:0;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-favori {% if est_favori %}active{% endif %}" title="{% if est_favori %}Retirer des favoris{% else %}Ajouter aux favoris{% endif %}">
+                            <i class="{% if est_favori %}fas{% else %}far{% endif %} fa-heart"></i>
+                            {% if est_favori %}Retirer{% else %}Sauvegarder{% endif %}
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
                 <span class="bien-transaction-tag {{ bien.type_transaction }}">{{ bien.get_type_transaction_display }}</span>
                 <div class="bien-price-badge">{{ bien.prix|floatformat:0 }} FCFA</div>
                 <div class="bien-location">

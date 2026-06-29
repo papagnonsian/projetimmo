@@ -3,14 +3,18 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.contrib.auth.models import User
-from django.db.models import Q, Count, Sum
+from django.db.models import Q, Count, Sum, Case, When, Value, BooleanField
+from django.utils import timezone
 from django.core.paginator import Paginator
-from .models import Agence, Agent, Client, Bien, Categorie, Photo, Demande
+from .models import Agence, Agent, Client, Bien, Categorie, Photo, Demande, Favori, Message
 from .forms import (
     InscriptionClientForm, InscriptionAgentForm, ConnexionForm, BienForm,
     DemandeVisiteForm, FiltreBiensForm, AgenceForm, AgentForm, CategorieForm,
     ModifierProfilClientForm
 )
+from .emails import notifier_nouvelle_demande, notifier_demande_traitee, notifier_nouveau_message
+from django.core.mail import send_mail
+from django.conf import settings
 
 # Vérification admin
 def is_admin(user):
@@ -22,7 +26,7 @@ def accueil(request):
     categories = Categorie.objects.annotate(nb_biens=Count('biens'))
     total_biens = Bien.objects.filter(statut='publie').count()
     total_agences = Agence.objects.count()
-    
+
     return render(request, 'annonces/accueil.html', {
         'derniers_biens': derniers_biens,
         'categories': categories,
@@ -30,11 +34,36 @@ def accueil(request):
         'total_agences': total_agences,
     })
 
+def agences_recommandees(request):
+    agences = Agence.objects.filter(
+        premium_jusqu_au__gte=timezone.localdate()
+    ).annotate(nb_biens=Count('biens', filter=Q(biens__statut='publie')))
+
+    return render(request, 'annonces/agences_recommandees.html', {
+        'agences': agences,
+    })
+
+def biens_agence_recommandee(request, agence_id):
+    agence = get_object_or_404(Agence, id=agence_id, premium_jusqu_au__gte=timezone.localdate())
+    biens = Bien.objects.filter(agence=agence, statut='publie').select_related('categorie').prefetch_related('photos')
+
+    paginator = Paginator(biens, 9)
+    page_obj = paginator.get_page(request.GET.get('page', 1))
+
+    return render(request, 'annonces/biens_agence_recommandee.html', {
+        'agence': agence,
+        'biens': page_obj,
+        'page_obj': page_obj,
+    })
+
 def liste_biens(request):
     biens = Bien.objects.filter(statut='publie')
     form = FiltreBiensForm(request.GET or None)
 
     if form.is_valid():
+        if form.cleaned_data.get('q'):
+            recherche = form.cleaned_data['q']
+            biens = biens.filter(Q(titre__icontains=recherche) | Q(description__icontains=recherche))
         if form.cleaned_data.get('categorie'):
             biens = biens.filter(categorie=form.cleaned_data['categorie'])
         if form.cleaned_data.get('type_transaction'):
@@ -46,10 +75,23 @@ def liste_biens(request):
         if form.cleaned_data.get('prix_max'):
             biens = biens.filter(prix__lte=form.cleaned_data['prix_max'])
 
+    # Les biens des agences premium remontent en tête des résultats.
+    biens = biens.annotate(
+        agence_premium=Case(
+            When(agence__premium_jusqu_au__gte=timezone.localdate(), then=Value(True)),
+            default=Value(False),
+            output_field=BooleanField(),
+        )
+    ).order_by('-agence_premium', '-date_creation')
+
     total_biens = biens.count()
     paginator = Paginator(biens, 9)
     page_number = request.GET.get('page', 1)
     page_obj = paginator.get_page(page_number)
+
+    favoris_ids = set()
+    if request.user.is_authenticated and hasattr(request.user, 'client'):
+        favoris_ids = set(Favori.objects.filter(client=request.user.client).values_list('bien_id', flat=True))
 
     return render(request, 'annonces/liste_biens.html', {
         'biens': page_obj,
@@ -57,20 +99,24 @@ def liste_biens(request):
         'form': form,
         'total_biens': total_biens,
         'get_params': request.GET.urlencode(),
+        'favoris_ids': favoris_ids,
     })
 
 def detail_bien(request, bien_id):
     bien = get_object_or_404(Bien, id=bien_id, statut='publie')
     deja_demande = False
+    est_favori = False
     if request.user.is_authenticated and hasattr(request.user, 'client'):
         deja_demande = Demande.objects.filter(client=request.user.client, bien=bien).exists()
-    
+        est_favori = Favori.objects.filter(client=request.user.client, bien=bien).exists()
+
     return render(request, 'annonces/detail_bien.html', {
         'bien': bien,
         'photos': bien.photos.all(),
         'photo_principale': bien.photos.filter(est_principale=True).first() or bien.photos.first(),
         'demandes_form': DemandeVisiteForm(),
         'deja_demande': deja_demande,
+        'est_favori': est_favori,
     })
 
 # Authentification
@@ -276,15 +322,26 @@ def demandes_recues(request):
     })
 
 @login_required
-def traiter_demande(request, demande_id, action):
+def traiter_demande(request, demande_id):
     if not hasattr(request.user, 'agent'):
         messages.error(request, "Accès réservé aux agents.")
         return redirect('accueil')
-    
+    if request.method != 'POST':
+        return redirect('demandes_recues')
+
+    action = request.POST.get('action')
+    if action not in ('accepter', 'refuser'):
+        return redirect('demandes_recues')
+
     demande = get_object_or_404(Demande, id=demande_id, bien__agent=request.user.agent)
     demande.statut = 'acceptee' if action == 'accepter' else 'refusee'
+    reponse = request.POST.get('reponse_agent', '').strip()
+    if reponse:
+        demande.reponse_agent = reponse
     demande.save()
-    messages.success(request, f"Demande {action}ée avec succès.")
+    notifier_demande_traitee(request, demande)
+    label = "acceptée" if action == 'accepter' else "refusée"
+    messages.success(request, f"Demande {label} avec succès.")
     return redirect('demandes_recues')
 
 @login_required
@@ -305,6 +362,7 @@ def demander_visite(request, bien_id):
             demande.client = request.user.client
             demande.bien = bien
             demande.save()
+            notifier_nouvelle_demande(request, demande)
             messages.success(request, f"Demande envoyée pour {bien.titre}")
     return redirect('detail_bien', bien_id=bien_id)
 
@@ -510,3 +568,104 @@ def gestion_biens(request):
 def gestion_demandes(request):
     demandes = Demande.objects.all().select_related('client', 'bien').order_by('-date_demande')
     return render(request, 'annonces/gestion_demandes.html', {'demandes': demandes})
+
+# Favoris
+@login_required
+def toggle_favori(request, bien_id):
+    if not hasattr(request.user, 'client'):
+        messages.error(request, "Vous devez être client pour ajouter des favoris.")
+        return redirect('connexion')
+
+    bien = get_object_or_404(Bien, id=bien_id, statut='publie')
+    favori, created = Favori.objects.get_or_create(client=request.user.client, bien=bien)
+    if not created:
+        favori.delete()
+        messages.info(request, f"« {bien.titre} » retiré de vos favoris.")
+    else:
+        messages.success(request, f"« {bien.titre} » ajouté à vos favoris !")
+
+    next_url = request.POST.get('next') or request.META.get('HTTP_REFERER') or 'liste_biens'
+    return redirect(next_url)
+
+@login_required
+def mes_favoris(request):
+    if not hasattr(request.user, 'client'):
+        messages.error(request, "Accès réservé aux clients.")
+        return redirect('accueil')
+
+    favoris = Favori.objects.filter(
+        client=request.user.client
+    ).select_related('bien__categorie', 'bien__agence').prefetch_related('bien__photos')
+
+    return render(request, 'annonces/mes_favoris.html', {'favoris': favoris})
+
+# Discussion
+@login_required
+def discussion(request, demande_id):
+    demande = get_object_or_404(Demande, id=demande_id)
+
+    # Seuls le client de la demande et l'agent du bien peuvent accéder
+    est_client = hasattr(request.user, 'client') and demande.client == request.user.client
+    est_agent = hasattr(request.user, 'agent') and demande.bien.agent == request.user.agent
+    if not est_client and not est_agent and not (request.user.is_staff or request.user.is_superuser):
+        messages.error(request, "Accès non autorisé.")
+        return redirect('accueil')
+
+    if request.method == 'POST':
+        contenu = request.POST.get('contenu', '').strip()
+        if contenu:
+            msg = Message.objects.create(
+                demande=demande,
+                auteur=request.user,
+                contenu=contenu,
+            )
+            notifier_nouveau_message(request, msg)
+        return redirect('discussion', demande_id=demande_id)
+
+    msgs = demande.messages.select_related('auteur').all()
+    return render(request, 'annonces/discussion.html', {
+        'demande': demande,
+        'msgs': msgs,
+        'est_agent': est_agent,
+    })
+
+# Abonnement premium
+@login_required
+def demander_abonnement_premium(request):
+    if not hasattr(request.user, 'agent'):
+        return redirect('accueil')
+
+    agence = request.user.agent.agence
+
+    if agence.est_premium:
+        messages.info(request, "Votre agence est déjà abonnée au premium.")
+        return redirect('mes_biens')
+
+    # Récupérer l'email des admins (superusers)
+    admins = User.objects.filter(is_superuser=True).exclude(email='').values_list('email', flat=True)
+    destinataires = list(admins) or [settings.DEFAULT_FROM_EMAIL]
+
+    agent = request.user.agent
+    corps = (
+        f"Bonjour,\n\n"
+        f"L'agence « {agence.nom_agence} » souhaite s'abonner au plan premium.\n\n"
+        f"Informations de contact :\n"
+        f"  Agent   : {agent.prenom} {agent.nom}\n"
+        f"  Email   : {agent.email}\n"
+        f"  Tél.    : {agent.telephone}\n"
+        f"  Adresse : {agence.adresse}\n\n"
+        f"Connectez-vous au tableau de bord pour activer l'abonnement :\n"
+        f"{request.build_absolute_uri('/admin-dashboard/agences/')}\n\n"
+        f"— Agence Immo CI"
+    )
+
+    send_mail(
+        subject=f"Demande d'abonnement premium — {agence.nom_agence}",
+        message=corps,
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        recipient_list=destinataires,
+        fail_silently=True,
+    )
+
+    messages.success(request, "Votre demande a été envoyée à l'administrateur. Il vous contactera prochainement.")
+    return redirect('mes_biens')
